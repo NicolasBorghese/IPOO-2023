@@ -71,7 +71,7 @@ class Fecha
     public function incremento_un_dia()
     {
         if ($this->dia == 28 && $this->mes == 2 && $this->esBisiesto == false) {
-            $dia = 1;
+            $this->dia = 1;
             $this->mes++;
         } else {
             if ($this->dia == 29 && $this->mes == 2) {
