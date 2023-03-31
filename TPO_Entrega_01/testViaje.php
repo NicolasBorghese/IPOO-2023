@@ -6,7 +6,7 @@ include("Viaje.php");
 /********************************************************************************/
 
 /**
- * Imprime en pantalla un menú de opciones y
+ * Imprime en pantalla un menú de opciones y 
  * retorna un entero que representa la opcion elegida
  * 
  * @return int
