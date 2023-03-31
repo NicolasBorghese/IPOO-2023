@@ -248,7 +248,7 @@ function creaArregloEmpleadosAleatorio(){
 }
 
 /**
- * Recibe un número y devuelve un nombre de varón
+ * Recibe un número y devuelve un nombre de varón (de entre 20 nombres)
  * 
  * @param int $numero
  * @return string
@@ -317,14 +317,14 @@ function generaNombreVaron($numero){
         case 20:
             $nombre = "Raul";
         default:
-            $nombre = "OwO";
+            $nombre = "Martín";
             break;
     }
     return $nombre;
 }
 
 /**
- * Recibe un número y devuelve un nombre de mujer
+ * Recibe un número y devuelve un nombre de mujer (de entre 20 nombres)
  * 
  * @param int $numero
  * @return string
@@ -393,14 +393,14 @@ function generaNombreMujer($numero){
         case 20:
             $nombre = "Alejandra";
         default:
-            $nombre = "UwU";
+            $nombre = "Camila";
             break;
     }
     return $nombre;
 }
 
 /**
- * Recibe un número y devuelve un apellido
+ * Recibe un número y devuelve un apellido (de entre 20 apellidos)
  * 
  * @param int $numero
  * @return string
@@ -469,7 +469,7 @@ function generaApellido($numero){
         case 20:
             $apellido = "Herrera";
         default:
-            $apellido = "^w^";
+            $apellido = "Rojas";
             break;
     }
     return $apellido;

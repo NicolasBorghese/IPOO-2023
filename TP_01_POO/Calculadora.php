@@ -2,7 +2,7 @@
 
 class Calculadora{
 
-    // Sin atributos
+    //SIN ATRIBUTOS
 
     public function __construct()
     {
@@ -10,6 +10,7 @@ class Calculadora{
         // No modifica atributos
     }
 
+    //PROPIAS DE CLASE
     public function suma($numA, $numB){
         return $numA + $numB;
     }

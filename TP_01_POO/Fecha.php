@@ -3,22 +3,22 @@
 class Fecha
 {
 
-    //Atributos
+    //ATRIBUTOS
     private $dia;
     private $mes;
     private $anio;
     private $esBisiesto;
 
+    //CONSTRUCTOR
     public function __construct()
     {
-        //Constructor por default
-        $this -> dia = 1;
-        $this -> mes = 1;
-        $this -> anio = 1900;
-        $this -> esBisiesto = false;
+        $this->dia = 1;
+        $this->mes = 1;
+        $this->anio = 1900;
+        $this->esBisiesto = false;
     }
 
-    // MODIFICADORES (set)
+    //MODIFICADORES
     public function setDia($nuevoDia)
     {
         $this->dia = $nuevoDia;
@@ -32,10 +32,10 @@ class Fecha
     public function setAnio($nuevoAnio)
     {
         $this->anio = $nuevoAnio;
-        $this-> determinaBisiesto();
+        $this->determinaBisiesto();
     }
 
-    // OBSERVADORES (get)
+    //OBSERVADORES
     public function getDia()
     {
         return $this->dia;
@@ -56,7 +56,7 @@ class Fecha
         return $this->esBisiesto;
     }
 
-    // PROPIAS DE TIPO
+    //PROPIAS DE CLASE
     public function fechaAbreviada()
     {
         return "(" . $this->dia . "/" . $this->mes . "/" . $this->anio . ")";
