@@ -15,21 +15,24 @@ function menuDesplegable()
     // int $opcionElegida
 
     do{
-        echo "------------------------------------------------------------------------------------\n";
-        echo "||                                  MENÚ PRINCIPAL                                ||\n";
-        echo "||                                                                                ||\n";
-        echo "|| Ingrese por teclado el número que corresponda a la opción elegida:             ||\n";
-        echo "||                                                                                ||\n";
-        echo "|| [1] Crea un arreglo de alumnos                                                 ||\n";
-        echo "|| [2] Muestra el arreglo de alumnos actual                                       ||\n";
-        echo "|| [3] Ingresar una materia para obtener la cantidad de alumnos que la rindieron  ||\n";
-        echo "|| [4] Indica el porcentaje de alumnos que rindio cada materia                    ||\n";
-        echo "|| [5] Obtener toda la información del alumno que tuvo mayor nota en cada materia ||\n";
-        echo "|| [6] Indica la cantidad de alumnos que aprobaron cada materia con 70 o más nota ||\n";
-        echo "|| [7] Retorna un arreglo con los alumnos que aprobaron una materia indicada      ||\n";
-        echo "|| [0] Para finaizar el programa                                                  ||\n";
-        echo "||                                                                                ||\n";
-        echo "------------------------------------------------------------------------------------\n";
+        echo "----------------------------------------------------------------------------------------------\n";
+        echo "||                                  MENÚ PRINCIPAL                                          ||\n";
+        echo "||                                                                                          ||\n";
+        echo "|| Ingrese por teclado el número que corresponda a la opción elegida:                       ||\n";
+        echo "||                                                                                          ||\n";
+        echo "|| [1] Crear un arreglo de alumnos con sus respectivas notas en cada materia                ||\n";
+        echo "|| [2] Mostrar el arreglo de notas actual                                                   ||\n";
+        echo "|| [3] Ordenar las notas por materia o número de legajo                                     ||\n";
+        echo "|| [4] a) Ingresar una materia para obtener la cantidad de alumnos que la rindieron         ||\n";
+        echo "|| [5] b) Indicar el porcentaje de alumnos que rindio cada materia                          ||\n";
+        echo "|| [6] c) Obtener toda la información del alumno que tuvo mayor nota en cada materia        ||\n";
+        echo "|| [7] d) Indicar la cantidad de alumnos que aprobaron cada materia con 70 o más nota       ||\n";
+        echo "|| [8] e) Retorna un arreglo con los alumnos que aprobaron una materia indicada             ||\n";
+        echo "|| [9] f) obtener los números de legajo de los alumnos que aprobaron más de cuatro materias ||\n";
+        echo "|| [10] g) obtener un arreglo con las materias aprobadas por un alumno ingresando su legajo ||\n";
+        echo "|| [0] Para finaizar el programa                                                            ||\n";
+        echo "||                                                                                          ||\n";
+        echo "-----------------------------------------------------------------------------------------------\n";
         echo "\n";
         echo "Indique la operación que desea realizar: ";
         $opcionElegida = trim(fgets(STDIN));
@@ -75,26 +78,42 @@ function detenerEjecucion()
 }
 
 /**
- * Retorna un arreglo compuesto de alumnos y sus datos
+ * Retorna un arreglo compuesto de Notas en base a la cantidad de alumnos indicado
  * 
  * @return array
  */
-function creaArregloAlumnos(){
-    // array $arregloAlumnos
-    // int $cantAlumnos
-    $cantAlumnos = random_int(30, 45);
-    $arregloAlumnos = [];
+function creaArregloNotas($cantAlumnos){
+    // array $arregloNotas, $materiasAlumno
+    // int $cantAlumnos, $cantMaterias, $posMateria
+    // string $materiaParaArreglo
+    if(!ctype_digit($cantAlumnos)){
+        $cantAlumnos = random_int(10, 20);
+    }
+    $arregloNotas = [];
+    $materiasAlumnos = [];
+    $posNota = 0;
 
     for ($i = 0; $i < $cantAlumnos; $i++){
-        $arregloAlumnos[$i] = ["nroLegajo" => 1000 + $i, "codigoMateria" => asignaMateria(random_int(1, 70)), "notaObtenida" => random_int(0,100)];
+        $numLegajo = ((1+$i)*100) + (1+$i);
+        $cantMaterias = random_int(1, 7);
+
+        while (count($materiasAlumnos) < $cantMaterias){
+            $materiaParaArreglo = asignaMateria(random_int(1, 70));
+            if(!in_array($materiaParaArreglo, $materiasAlumnos)){
+                array_push($materiasAlumnos, $materiaParaArreglo);
+            }
+        }
+
+        for($j = 0; $j < $cantMaterias; $j++){
+            $arregloNotas[$posNota] = ["nroLegajo" => $numLegajo, "codigoMateria" => $materiasAlumnos[$j], "notaObtenida" => random_int(0,100)];
+            $posNota++;
+        }
     }
 
     // El uasort solo sirve para ver con print_r
-    uasort($arregloAlumnos, 'cmp');
+    uasort($arregloNotas, 'cmp');
 
-    $arregloAlumnos = ordenaArregloAlumnosMateria($arregloAlumnos);
-
-    return $arregloAlumnos;
+    return $arregloNotas;
 }
 
 /**
@@ -146,14 +165,44 @@ function ordenaArregloAlumnosMateria($alumnos){
 }
 
 /**
- * Imprime en pantalla un arreglo de alumnos
+ * Ordena arreglo de alumnos (recibido por parametro) por orden de número de legajo y lo devuelve ordenado
  * 
- * @param array $arregloAlumnos
+ * @param array $alumnos
+ * @return array
  */
-function muestraAlumnos($arregloAlumnos){
+function ordenaArregloAlumnosLegajo($alumnos){
+    // array $alumnosOrdenados
+    $alumnosOrdenados = [];
+    $alumnosOrdenados[0] = $alumnos[0];
+
+    for($i = 1; $i < count($alumnos); $i++){
+        
+        array_push($alumnosOrdenados, $alumnos[$i]);
+        $posOrdenados = count($alumnosOrdenados)-1;
+
+        while($posOrdenados >= 1 && ($alumnosOrdenados[$posOrdenados]["nroLegajo"] < $alumnosOrdenados[$posOrdenados-1]["nroLegajo"])){
+
+            $guardaTemporal = $alumnosOrdenados[$posOrdenados-1];
+            $alumnosOrdenados[$posOrdenados-1] = $alumnosOrdenados[$posOrdenados];
+            $alumnosOrdenados[$posOrdenados] = $guardaTemporal;
+
+            $posOrdenados--;
+
+        }
+    }
+
+    return $alumnosOrdenados;
+}
+
+/**
+ * Imprime en pantalla un arreglo de notas
+ * 
+ * @param array $arregloNotas
+ */
+function muestraAlumnos($arregloNotas){
     
-    for($i = 0; $i < count($arregloAlumnos); $i++){
-        echo "Alumno legajo: ".$arregloAlumnos[$i]["nroLegajo"].", materia: ".$arregloAlumnos[$i]["codigoMateria"].", nota: ".$arregloAlumnos[$i]["notaObtenida"]."\n";
+    for($i = 0; $i < count($arregloNotas); $i++){
+        echo "Nota n°". $i+1 ." legajo: ".$arregloNotas[$i]["nroLegajo"].", materia: ".$arregloNotas[$i]["codigoMateria"].", nota: ".$arregloNotas[$i]["notaObtenida"]."\n";
     }
 }
 
@@ -217,7 +266,7 @@ function asignaMateria($numero){
 /**
  * Pide al usuario que ingrese una materia y si está correcta la devuelta
  */
-function ingreseMateriaFerificador($materia){
+function ingreseMateriaverificador($materia){
     // boolean $existeMateria
     $existeMateria = false;
     do {
@@ -258,20 +307,40 @@ function ingreseMateriaFerificador($materia){
     }while ($existeMateria == false);
 
     return $materia;
-} 
+}
+
 /**
- * Muestra la cantidad de alumnos que rindieron una materia dentro de un arreglo de alumnos
+ * Recibe un arreglo de notas y devuelve un arreglo de legajos de los alumnos
+ * 
+ * @param array $arregloNotas
+ * @return array
+ */
+function devuelveArregloAlumnos($arregloNotas){
+    // array $arregloAlumnos
+    $arregloAlumnos = [];
+
+    for($i = 0; $i < count($arregloNotas); $i++){
+        if(!in_array($arregloNotas[$i]["nroLegajo"], $arregloAlumnos)){
+            array_push($arregloAlumnos, $arregloNotas[$i]["nroLegajo"]);
+        }
+    }
+    return $arregloAlumnos;
+}
+
+/**
+ * PUNTO A)
+ * Muestra la cantidad de alumnos que rindieron una materia dentro de un arreglo de Notas
  * 
  * @param string $materia
- * @param array $alumnos
+ * @param array $arregloNotas
  * @return int
  */
-function cantAlumRindieronMateria($materia, $alumnos){
+function cantAlumRindieronMateria($materia, $arregloNotas){
     // $cantAlumnos
     $cantAlumnos = 0;
 
-    for ($i = 0; $i < count($alumnos); $i++){
-        if($alumnos[$i]["codigoMateria"] == $materia){
+    for ($i = 0; $i < count($arregloNotas); $i++){
+        if($arregloNotas[$i]["codigoMateria"] == $materia){
             $cantAlumnos++;
         }
     }
@@ -279,36 +348,37 @@ function cantAlumRindieronMateria($materia, $alumnos){
 }
 
 /**
+ * PUNTO B)
  * Muestra el porcentaje de alumnos que rindieron cada materia
  * 
  * @param array $alumnos
  */
-function porcAlumnosRindieronCateria($arregloAlumnos){
+function porcAlumnosRindieronMateria($arregloNotas){
     // int $alumnosTotales, $porcentajeAlumnos, $posArregloDatos
     // float $porcAlumnos
     // string $materia
     // array $datosAlumnos
     // boolean $materiaEncontrada
 
-    $alumnosTotales = count($arregloAlumnos);
+    $alumnosTotales = count(devuelveArregloAlumnos($arregloNotas));
     $datosAlumnos = [];
     $posArregloDatos = 0;
     $materiaEncontrada = false;
 
     // Se puede reveer esta condición
-    if($arregloAlumnos[0] != null){
-        $datosAlumnos[0] = ["codigoMateria" => $arregloAlumnos[0]["codigoMateria"], "cantMateria" => 1];
+    if($arregloNotas[0] != null){
+        $datosAlumnos[0] = ["codigoMateria" => $arregloNotas[0]["codigoMateria"], "cantMateria" => 1];
 
         // Recorre a cada alumno dentro del arreglo recibido
-        for ($i = 1; $i < count($arregloAlumnos); $i++){
+        for ($i = 1; $i < count($arregloNotas); $i++){
             // Recorre el arreglo nuevo y si la materia no existe la crea
             while ($materiaEncontrada == false){
-                if($arregloAlumnos[$i]["codigoMateria"] == $datosAlumnos[$posArregloDatos]["codigoMateria"]){
+                if($arregloNotas[$i]["codigoMateria"] == $datosAlumnos[$posArregloDatos]["codigoMateria"]){
                     $datosAlumnos[$posArregloDatos]["cantMateria"]++;
                     $materiaEncontrada = true;
     
                 } else if ($posArregloDatos+1 == count($datosAlumnos)){
-                    array_push($datosAlumnos, ["codigoMateria" => $arregloAlumnos[$i]["codigoMateria"], "cantMateria" => 1]);
+                    array_push($datosAlumnos, ["codigoMateria" => $arregloNotas[$i]["codigoMateria"], "cantMateria" => 1]);
                     $materiaEncontrada = true;
                 }
                 $posArregloDatos++;
@@ -317,17 +387,15 @@ function porcAlumnosRindieronCateria($arregloAlumnos){
             $posArregloDatos = 0;
         }
     
-        $cantTotal = 0;
         for ($i = 0; $i < count($datosAlumnos); $i++){
             $porcAlumnos = ($datosAlumnos[$i]["cantMateria"] * 100) / $alumnosTotales;
             $materia = $datosAlumnos[$i]["codigoMateria"];
             $cantAlumnos = $datosAlumnos[$i]["cantMateria"];
-            $cantTotal = $cantTotal + $cantAlumnos;
+
             echo "La cantidad de alumnos que rindio ".$materia." fue: ".$cantAlumnos."/".$alumnosTotales."\n";
             echo "El porcentaje de alumnos que rindio ".$materia." fue el ".$porcAlumnos."%\n";
             echo "\n";
         }
-        echo $cantTotal."/".$alumnosTotales."\n";
 
     } else {
         echo "La información recibida no es válida.";
@@ -336,6 +404,7 @@ function porcAlumnosRindieronCateria($arregloAlumnos){
 }
 
 /**
+ * PUNTO C)
  * obtener toda la información del alumno que mayor nota obtuvo por cada materia.
  * 
  * @param array $alumnos
@@ -359,28 +428,12 @@ function alumnoMayorNota($alumnos){
             while ($materiaEncontrada == false){
                 if($alumnos[$i]["codigoMateria"] == $datosAlumnos[$posArregloDatos]["codigoMateria"]){
                     if($alumnos[$i]["notaObtenida"] > $datosAlumnos[$posArregloDatos]["notaObtenida"]){
-                        $datosAlumnos[$posArregloDatos] = $alumnos[$i];
-
-                        /**
-                         * $legajo0 = $datosAlumnos[$posArregloDatos]["nroLegajo"];
-                         * $materia0 = $datosAlumnos[$posArregloDatos]["codigoMateria"];
-                         * $nota0 = $datosAlumnos[$posArregloDatos]["notaObtenida"];
-                         * echo "Modifíca posición: ".$posArregloDatos." con nro legajo:".$legajo0.", materia: ".$materia0.", nota: ".$nota0."\n";
-                         */
-                        
+                        $datosAlumnos[$posArregloDatos] = $alumnos[$i];        
                     }
                     $materiaEncontrada = true;
     
                 } else if ($posArregloDatos+1 == count($datosAlumnos)){
                     array_push($datosAlumnos, $alumnos[$i]);
-
-                    /**
-                    * $legajo0 = $datosAlumnos[$posArregloDatos]["nroLegajo"];
-                    * $materia0 = $datosAlumnos[$posArregloDatos]["codigoMateria"];
-                    * $nota0 = $datosAlumnos[$posArregloDatos]["notaObtenida"];
-                    * echo "Agrega en posición: ".$posArregloDatos." con nro legajo:".$legajo0.", materia: ".$materia0.", nota: ".$nota0."\n";
-                    */
-
                     $materiaEncontrada = true;
                 }
                 $posArregloDatos++;
@@ -399,42 +452,43 @@ function alumnoMayorNota($alumnos){
 }
 
 /**
+ * PUNTO D)
  * si una materia se aprueba con una nota >=7, retornar la cantidad de alumnos aprobados por materia.
  * 
  * @param array $alumnos
  */
 function cantAlumnosAprobados($alumnos){
     // int $posArregloDatos, $cantAprobadosTotales, $alumnosTotales, 
-    // array $arregloAprobados
+    // array $arregloAlumnos
     // boolean $materiaEncontrada
 
-    $alumnosTotales = count($alumnos);
-    $arregloAprobados = [];
+    $examenesTotales = count($alumnos);
+    $arregloAlumnos = [];
     $posArregloAprobados = 0;
     $materiaEncontrada = false;
 
     // Se puede reveer esta condición
     if($alumnos[0] != null){
-        $arregloAprobados[0] = ["codigoMateria" => $alumnos[0]["codigoMateria"], "cantAprobados" => 0, "cantTotal" => 0];
+        $arregloAlumnos[0] = ["codigoMateria" => $alumnos[0]["codigoMateria"], "cantAprobados" => 0, "cantTotal" => 0];
 
         // Recorre a cada alumno dentro del arreglo recibido
-        for ($i = 1; $i < count($alumnos); $i++){
+        for ($i = 0; $i < count($alumnos); $i++){
             // Recorre el arreglo nuevo y si la materia no existe la crea
             while ($materiaEncontrada == false){
-                if($alumnos[$i]["codigoMateria"] == $arregloAprobados[$posArregloAprobados]["codigoMateria"]){
+                if($alumnos[$i]["codigoMateria"] == $arregloAlumnos[$posArregloAprobados]["codigoMateria"]){
                     if($alumnos[$i]["notaObtenida"] >= 70){
-                        $arregloAprobados[$posArregloAprobados]["cantAprobados"]++;
-                        $arregloAprobados[$posArregloAprobados]["cantTotal"]++;
+                        $arregloAlumnos[$posArregloAprobados]["cantAprobados"]++;
+                        $arregloAlumnos[$posArregloAprobados]["cantTotal"]++;
                     } else {
-                        $arregloAprobados[$posArregloAprobados]["cantTotal"]++;
+                        $arregloAlumnos[$posArregloAprobados]["cantTotal"]++;
                     }
                     $materiaEncontrada = true;
     
-                } else if ($posArregloAprobados+1 == count($arregloAprobados)){
+                } else if ($posArregloAprobados+1 == count($arregloAlumnos)){
                     if($alumnos[$i]["notaObtenida"] >= 70){
-                        array_push($arregloAprobados, ["codigoMateria" => $alumnos[$i]["codigoMateria"], "cantAprobados" => 1, "cantTotal" => 1]);
+                        array_push($arregloAlumnos, ["codigoMateria" => $alumnos[$i]["codigoMateria"], "cantAprobados" => 1, "cantTotal" => 1]);
                     } else {
-                        array_push($arregloAprobados, ["codigoMateria" => $alumnos[$i]["codigoMateria"], "cantAprobados" => 0, "cantTotal" => 1]);
+                        array_push($arregloAlumnos, ["codigoMateria" => $alumnos[$i]["codigoMateria"], "cantAprobados" => 0, "cantTotal" => 1]);
                     }
                     $materiaEncontrada = true;
                 }
@@ -446,17 +500,17 @@ function cantAlumnosAprobados($alumnos){
     
         $cantAprobadosTotales = 0;
 
-        for ($i = 0; $i < count($arregloAprobados); $i++){
+        for ($i = 0; $i < count($arregloAlumnos); $i++){
 
-            $materia = $arregloAprobados[$i]["codigoMateria"];
-            $cantAprobados = $arregloAprobados[$i]["cantAprobados"];
-            $cantTotal = $arregloAprobados[$i]["cantTotal"];
+            $materia = $arregloAlumnos[$i]["codigoMateria"];
+            $cantAprobados = $arregloAlumnos[$i]["cantAprobados"];
+            $cantTotal = $arregloAlumnos[$i]["cantTotal"];
             $cantAprobadosTotales = $cantAprobadosTotales + $cantAprobados;
 
             echo "La cantidad de alumnos que aprobo ".$materia." fue: ".$cantAprobados."/".$cantTotal."\n";
         }
         echo "\n";
-        echo "Cantidad de aprobados totales: ".$cantAprobadosTotales."/".$alumnosTotales."\n";
+        echo "Cantidad de notas aprobadas totales: ".$cantAprobadosTotales."/".$examenesTotales."\n";
 
     } else {
         echo "La información recibida no es válida.";
@@ -465,15 +519,99 @@ function cantAlumnosAprobados($alumnos){
 }
 
 /**
+ * PUNTO E)
  * dada una materia retornar un arreglo con los alumnos que aprobaron esa materia.
  * 
- * @param array $alumnos
+ * @param array $arregloNotas
  * @param string $materia
  * @return array
  */
-function alumnosAprobaronMateria($alumnos, $materia){
-    cwcwec;
+function alumnosAprobaronMateria($arregloNotas, $materia){
+    // array $arregloAlumnos
+    $arregloAlumnos = [];
 
+    for($i = 0; $i < count($arregloNotas); $i++){
+        if($arregloNotas[$i]["codigoMateria"] == $materia && $arregloNotas[$i]["notaObtenida"] > 70){
+            array_push($arregloAlumnos, $arregloNotas[$i]);
+        }
+    }
+    return $arregloAlumnos;
+}
+
+/**
+ * PUNTO F)
+ * obtener los legajos de los alumnos que aprobaron más de 4 materias
+ * 
+ * @param array $arregloNotas
+ * @return array
+ */
+function alumnos4MasMateriasAprobadas($arregloNotas){
+    // int $posAlumno, $legajo, $aprobadas
+    // boolean $alumnoEncontrado
+    // array $arregloAlumnos, $arregloAprobados
+    $alumnoEncontrado = false;
+    $arregloAlumnos = [];
+    $arregloAprobados = [];
+
+    for ($i = 0; $i < count($arregloNotas); $i++){
+        
+        if($arregloNotas[$i]["notaObtenida"] > 70){
+            $posAlumno = 0;
+            $legajo = $arregloNotas[$i]["nroLegajo"];
+            if(count($arregloAlumnos) == 0){
+                array_push($arregloAlumnos, ["nroLegajo" => $legajo, "cantAprobadas" => 1]);
+            } else {
+                while($posAlumno < count($arregloAlumnos) && $alumnoEncontrado==false){
+                    if($arregloNotas[$i]["nroLegajo"] == $arregloAlumnos[$posAlumno]["nroLegajo"]){
+                        $alumnoEncontrado = true;
+                        $arregloAlumnos[$posAlumno]["cantAprobadas"]++;
+                    } else {
+                        if ($posAlumno+1 == count($arregloAlumnos)){
+                            array_push($arregloAlumnos, ["nroLegajo" => $legajo, "cantAprobadas" => 1]);
+                            $alumnoEncontrado = true;
+                        }
+                    }
+                    $posAlumno++;
+                }
+                $alumnoEncontrado = false;
+            }
+            
+        }
+    }
+
+    for ($i = 0; $i < count($arregloAlumnos); $i++){
+        $aprobadas = $arregloAlumnos[$i]["cantAprobadas"];
+        if($aprobadas >= 4){
+            $legajo = $arregloAlumnos[$i]["nroLegajo"];
+            array_push($arregloAprobados, ["nroLegajo" => $legajo, "cantAprobadas" => $aprobadas]);
+        }
+    }
+    return $arregloAprobados;
+}
+
+/**
+ * PUNTO G)
+ * dado un número de legajo, obtener un arreglo con las materias aprobadas por ese alumno.
+ * 
+ * @param array $arregloNotas
+ * @param int $legajo
+ * @return array
+ */
+function materiasAprobadasPorLegajo($arregloNotas, $legajo){
+    // array $materiasAprobadas
+    // int $legajoEnArreglo, $nota
+    // string $materia
+    $materiasAprobadas = [];
+    for($i = 0; $i < count($arregloNotas); $i++){
+        $legajoEnArreglo = $arregloNotas[$i]["nroLegajo"];
+        $nota = $arregloNotas[$i]["notaObtenida"];
+        if($legajoEnArreglo == $legajo){
+            if($nota > 70){
+                array_push($materiasAprobadas,$arregloNotas[$i]);
+            }
+        }
+    }
+    return $materiasAprobadas;
 }
 
 /********************************************************************************/
@@ -481,56 +619,131 @@ function alumnosAprobaronMateria($alumnos, $materia){
 /********************************************************************************/
 
 // ***** Declaración de variables *****/
-// int
-// string
+// int $numLegajo, $opcionElegida, $cantAlumnos
+// float $nota
+// string $codMateria
 // boolean
-// array $arregloFavorito
+// array $arregloNotas, 
 
 $numLegajo = 1000;
 $codMateria = "Matematica";
 $nota = 100;
 
-$arregloAlumnos = [];
-$arregloAlumnos[0] = ["nroLegajo" => $numLegajo, "codigoMateria" => $codMateria, "notaObtenida" => $nota];
+$arregloNotas = [];
+$arregloNotas[0] = ["nroLegajo" => $numLegajo, "codigoMateria" => $codMateria, "notaObtenida" => $nota];
 
 do {
     $opcionMenu = menuDesplegable();
 
     switch ($opcionMenu){
         case 1:
-            $arregloAlumnos = creaArregloAlumnos();
-            echo "Arreglo de alumnos creado exitosamente\n";
-            echo count($arregloAlumnos)." alumnos han sido cargados.\n";
+            // Crea un arreglo de notas de alumnos aleatorio
+            echo "Ingrese la cantidad de alumnos que desea crear: ";
+            $cantAlumnos = trim(fgets(STDIN));
+            $arregloNotas = creaArregloNotas($cantAlumnos);
+            $cantAlumnos = count(devuelveArregloAlumnos($arregloNotas));
+            echo "Arreglo de notas creado\n";
+            echo count($arregloNotas)." notas de: ".$cantAlumnos." alumnos han sido cargadas exitosamente.\n";
             detenerEjecucion();
             break;
         case 2:
-            muestraAlumnos($arregloAlumnos);
+            // Imprime los alumnos que se encuentran cargados
+            muestraAlumnos($arregloNotas);
             detenerEjecucion();
             break;
         case 3:
-            echo "Ingrese la materia que desea saber cuantos alumnos rindieron: ";
-            $materia = trim(fgets(STDIN));
-            $cantAlumnos = cantAlumRindieronMateria($materia, $arregloAlumnos);
-            echo "Los alumnos que rindieron ".$materia." fueron: ".$cantAlumnos.".\n";
+            // Ordena los alumnos según el criterio indicado
+            echo "Ingrese 1 si desea ordenar las notas por número de legajo del alumno\n";
+            echo "Ingrese 2 si desea ordenar las notas por matería: ";
+            $opcionElegida = trim(fgets(STDIN));
+            if ($opcionElegida == 1){
+                $arregloNotas = ordenaArregloAlumnosLegajo($arregloNotas);
+                echo "Notas ordenadas por número de legajo exitosamente\n";
+            } else {
+                if( $opcionElegida == 2){
+                    $arregloNotas = ordenaArregloAlumnosMateria($arregloNotas);
+                    echo "Notas ordenadas por materia exitosamente\n";
+                } else {
+                    echo "ERROR: opción ingresada no válida\n";
+                }
+            }
             detenerEjecucion();
             break;
         case 4:
-            porcAlumnosRindieronCateria($arregloAlumnos);
+            // punto a) dada una materia obtener la cantidad de alumnos que rindieron esa materia.
+            echo "Ingrese la materia que desea saber cuantos alumnos rindieron: ";
+            $materia = trim(fgets(STDIN));
+            $cantAlumnos = cantAlumRindieronMateria($materia, $arregloNotas);
+            echo "Los alumnos que rindieron ".$materia." fueron: ".$cantAlumnos.".\n";
             detenerEjecucion();
             break;
         case 5:
-            alumnoMayorNota($arregloAlumnos);
+            // punto b) por cada materia el porcentaje de alumnos que la rindieron.
+            porcAlumnosRindieronMateria($arregloNotas);
             detenerEjecucion();
             break;
         case 6:
-            cantAlumnosAprobados($arregloAlumnos);
+            // punto c) obtener toda la información del alumno que mayor nota obtuvo por cada materia.
+            alumnoMayorNota($arregloNotas);
             detenerEjecucion();
             break;
         case 7:
+            // punto d) si una materia se aprueba con una nota >=7,
+            // retornar la cantidad de alumnos aprobados por materia.
+            cantAlumnosAprobados($arregloNotas);
+            detenerEjecucion();
+            break;
+        case 8:
+            // punto e) dada una materia retornar un arreglo con los alumnos que aprobaron esa materia.
             echo "Ingrese la materia que desea saber cuantos alumnos aprobaron: ";
             $materia = trim(fgets(STDIN));
-            $aprobados = alumnosAprobaronMateria($arregloAlumnos, $materia);
-            echo "Los alumnos que aprobaron ".$materia." fueron: ".$aprobados."\n";
+            $aprobados = alumnosAprobaronMateria($arregloNotas, $materia);
+            echo "\n";
+            if (count($aprobados) > 0) {
+                echo "Los alumnos que aprobaron ".$materia." fueron:\n";
+                echo "\n";
+                for($i = 0; $i < count($aprobados); $i++){
+                    $legajo = $aprobados[$i]["nroLegajo"];
+                    $nota = $aprobados[$i]["notaObtenida"];
+                    echo "Alumno legajo: ".$legajo.", nota: ".$nota."\n";
+                }
+            } else {
+                echo "No se encontraron aprobados para ".$materia."\n";
+            }
+            detenerEjecucion();
+            break;
+        case 9:
+            // punto f) obtener el o los números de legajo de los alumnos que aprobaron más de cuatro materias.
+            $arregloAprobados = alumnos4MasMateriasAprobadas($arregloNotas);
+            if(count($arregloAprobados) == 0){
+                echo "No hay alumnos aprobados con 4 o más materias\n";
+            } else {
+                echo "Los alumnos que tienen 4 o más materias aprobadas son\n";
+                for($i = 0; $i < count($arregloAprobados); $i++){
+                    $legajo = $arregloAprobados[$i]["nroLegajo"];
+                    $cantAprobadas = $arregloAprobados[$i]["cantAprobadas"];
+                    echo "Alumno legajo: ".$legajo.", materias aprobadas: ".$cantAprobadas."\n";
+                }
+            }
+            detenerEjecucion();
+            break;
+        case 10:
+            // punto g) dado un número de legajo, obtener un arreglo con las materias aprobadas por ese alumno.
+            echo "Ingrese el número de legajo del alumno del cual desea saber que materias aprobó: ";
+            $legajo = trim(fgets(STDIN));
+            $materiasAprobadas = materiasAprobadasPorLegajo($arregloNotas, $legajo);
+            if(count($materiasAprobadas) == 0){
+                echo "El alumno legajo ".$legajo." no tiene materias aprobadas\n";
+            } else {
+                echo "Las materias aprobadas por el alumno legajo ".$legajo." son\n";
+                for($i = 0; $i < count($materiasAprobadas); $i++){
+                    $materia = $materiasAprobadas[$i]["codigoMateria"];
+                    $nota = $materiasAprobadas[$i]["notaObtenida"];
+                    echo $materia." aprobada con ".$nota." puntos\n";
+                }
+            }
+
+            detenerEjecucion();
             break;
         case 0:
             // Finaliza el programa
