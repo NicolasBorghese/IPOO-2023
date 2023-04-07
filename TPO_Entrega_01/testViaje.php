@@ -45,7 +45,7 @@ function menuDesplegable()
         $opcionElegida = trim(fgets(STDIN));
         
         // OBSERVAR: el rango varía según cantidad de opciones
-        if($opcionElegida < 0 || $opcionElegida > 13){
+        if($opcionElegida < 0 || $opcionElegida > 13 || !ctype_digit($opcionElegida)){
             echo "\n";
             // Mensaje de error cuando la opción elegida está fuera de rango
             echo "--------------------------------------------------------------------------------\n";
@@ -408,8 +408,17 @@ do {
             $apellido = trim(fgets(STDIN));
 
             $pasajero = ["numero de documento" => $documento, "nombre" => $nombre, "apellido" => $apellido];
-            $mensaje = $viaje->agregarPasajero($pasajero);
-            echo $mensaje;
+            $puedeAgregar = $viaje->agregarPasajero($pasajero);
+
+            if($puedeAgregar){
+                echo "El pasajero se agrego con exito\n";
+            } else {
+                if (count($viaje->getPasajeros()) == $viaje->getCantMaxPasajeros()){
+                    echo "ERROR: el viaje se encuentra en su capacidad máxima de pasajeros\n";
+                } else {
+                    echo "ERROR: el documento del pasajero ya se encuentra registrado dentro del viaje\n";
+                }
+            }
             detenerEjecucion();
             break;
         case 5:
@@ -464,11 +473,11 @@ do {
             detenerEjecucion();
             break;
         case 9:
-            // Modifica la cantidad máxima perimitida de pasajeros en el viaje
+            // Modifica la cantidad máxima permitida de pasajeros en el viaje
             echo "Ingrese la nueva cantidad máxima permitida de pasajeros para este viaje: ";
             $capMaxima = trim(fgets(STDIN));
-            $esPosible = $viaje->setCantMaxPasajeros($capMaxima);
-            if ($esPosible){
+            if (ctype_digit($capMaxima)){
+                $viaje->setCantMaxPasajeros($capMaxima);
                 echo "Cantidad máxima de pasajeros para este viaje modificada exitosamente\n";
             } else {
                 echo "Error: valor ingresado para cantidad máxima de pasajeros invalido\n";
@@ -501,7 +510,7 @@ do {
             // Finaliza el programa
             break;
         default:
-            // En caso de error (imposible) accederá a esta opción
+            // En caso de error (imposible) accederá a esta opción y se finalizará el programa
             break;
     }
 
