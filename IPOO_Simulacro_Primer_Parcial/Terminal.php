@@ -103,7 +103,7 @@ class Terminal{
 
             $viajeVendido = $empresaBuscada->venderViajeADestino($cantAsientos, $destino, $fecha);
 
-            //Si el viaje se vende, se setea la colección de empresas
+            //Si el viaje se vende, se setea la colección de empresas con el viaje vendido
             if($viajeVendido != null){
                 $empresasCopia = $this->getColEmpresas();
                 $empresasCopia[$posEmpresa] = $empresaBuscada;
