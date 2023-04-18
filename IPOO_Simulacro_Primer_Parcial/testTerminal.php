@@ -60,7 +60,7 @@ echo "\n";
 echo "Dar viaje a destino Senillosa 5:\n";
 echo "\n";
 
-$arregloViajes = $empresaViaBariloche->darViajeADestino("Senillosa 5");
+$arregloViajes = ($terminal->getColEmpresas()[1])->darViajeADestino("Senillosa 5");
 for($i = 0; $i < count($arregloViajes); $i++ ){
     echo $arregloViajes[$i] ."\n";
     echo "\n";
