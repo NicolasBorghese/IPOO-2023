@@ -71,6 +71,11 @@ class Responsable{
     }
 
     //PROPIOS DE LA CLASE
+    /**
+     * Devuelve un string que contiene toda la información del estado de una instancia de tipo Responsable
+     * 
+     * @return string
+     */
     public function __toString(){
         $cadena = "Nombre: ".$this->getNombre()."\n";
         $cadena = $cadena ."Apellido: ".$this->getApellido()."\n";

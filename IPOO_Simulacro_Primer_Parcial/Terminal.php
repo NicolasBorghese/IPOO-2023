@@ -45,6 +45,11 @@ class Terminal{
     }
 
     //PROPIOS DE CLASE
+    /**
+     * Devuelve un string que contiene toda la información del estado de una instancia de tipo Terminal
+     * 
+     * @return string
+     */
     public function __toString(){
         //string $cadena
 
@@ -56,6 +61,11 @@ class Terminal{
         return $cadena;
     }
 
+    /**
+     * Devuelve un string que contiene toda la información de un arreglo que guarda objetos de tipo Empresa
+     * 
+     * @return string
+     */
     public function empresasAString(){
         //string $empresas
         $empresas = "";
@@ -81,41 +91,22 @@ class Terminal{
     public function ventaAutomatica($cantAsientos, $fecha, $destino, $empresa){
         //int $posEmpresa, $posViaje
         //string $fechaLeida, $destinoLeido
-        //boolean $viajeVendido
         //array $viajesEmpresa, $empresasCopia
         //Empresa $empresaBuscada
-        //Viaje $viajeLeido
+        //Viaje $viajeVendido
 
         $posEmpresa = $this->buscaEmpresa($empresa);
 
         if($posEmpresa != -1){
-            //Empresa copiada
+            //Empresa seleccionada
             $empresaBuscada = $this->getColEmpresas()[$posEmpresa];
 
-            $viajeVendido = false;
-            $posViaje = 0;
+            $viajeVendido = $empresaBuscada->venderViajeADestino($cantAsientos, $destino, $fecha);
 
-            //Colección copiada de viajes de la empresa copiada
-            $viajesEmpresa = $empresaBuscada->getColViajes();
-
-            while($viajeVendido == false && $posViaje < count($viajesEmpresa)){
-                //Viaje correspondiente a la colección copiada de viajes
-                $viajeLeido = $viajesEmpresa[$posViaje];
-                $fechaLeida = $viajeLeido->getFecha();
-                $destinoLeido = $viajeLeido->getDestino();
-
-                if($fechaLeida == $fecha && $destinoLeido == $destino){
-                    $viajeVendido = $viajesEmpresa[$posViaje]->asignarAsientosDisponibles($cantAsientos);
-
-                }
-                $posViaje++;
-            }
-
-            if($viajeVendido){
-                $empresaBuscada->setColViajes($viajesEmpresa);
+            //Si el viaje se vende, se setea la colección de empresas
+            if($viajeVendido != null){
                 $empresasCopia = $this->getColEmpresas();
                 $empresasCopia[$posEmpresa] = $empresaBuscada;
-
                 $this->setColEmpresas($empresasCopia);
             }
         }
@@ -128,6 +119,11 @@ class Terminal{
      * @param string $empresa
      */
     public function buscaEmpresa($empresa){
+        //int $pos, 
+        //string $nombreEmpresa
+        //boolean $encontrado
+        //Empresa $empresaEnCol
+
         $pos = 0;
         $encontrado = false;
 
@@ -152,7 +148,7 @@ class Terminal{
 
     /**
      * Implementar el método empresaMayorRecaudacion retorna un objeto de la clase
-     * empresa que se co- rresponde con la de mayor recaudación.
+     * empresa que se corresponde con la de mayor recaudación.
      * 
      * @return Empresa
      */
@@ -164,7 +160,7 @@ class Terminal{
         $empMayorRecaudacion = null;
         $recaudacionMayor = -1;
 
-        //Copia de la Coleccion de empresas de la terminal
+        //Selecciono la Coleccion de empresas de la terminal
         $colEmpresasCopia = $this->getColEmpresas();
         
         //Recorro todas las empresas para saber cual es la que tuvo la mayor recaudación
@@ -202,21 +198,21 @@ class Terminal{
         $posEmpresa = 0;
         $responsableEncontrado = false;
 
-        //Hago una referencia a la coleccion de empresas de la terminal para recorrerlas
+        //Seleciono la coleccion de empresas de la terminal para recorrerlas
         $colEmpresasCopia = $this->getColEmpresas();
 
         while($responsableEncontrado == false && $posEmpresa < count($colEmpresasCopia)){
 
-            //Hago una referencia a una empresa para recorrer sus viajes
+            //Selecciono a una empresa para recorrer sus viajes
             $empresaActual = $colEmpresasCopia[$posEmpresa];
             
             $posViaje = 0;
-            //Hago una referencia a la coleccion de viajes para recorrerlos
+            //Selecciono a la coleccion de viajes para recorrerlos
             $colViajesCopia = $empresaActual->getColViajes();
 
             while($responsableEncontrado == false && $posViaje < count($colViajesCopia)){
                 
-                //Hago una referencia a una empresa para comparar sus valores
+                //Selecciono a una empresa para comparar sus valores
                 $viajeActual = $colViajesCopia[$posViaje];
 
                 if($viajeActual->getNumero() == $numeroViaje){

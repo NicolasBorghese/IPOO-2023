@@ -26,9 +26,10 @@ $viaje1 = new Viaje("Roca", "0800", "1200", "125", 175, "0804", 50, 40, $respons
 $viaje2 = new Viaje("Chocon", "1000", "1800", "1127", 2700, "08092023", 60, 30, $responsable2);
 $viaje3 = new Viaje("Cutral Co", "0900", "1100", "077", 27000, "23082024", 30, 5, $responsable3);
 $viaje4 = new Viaje("Senillosa", "0630", "0830", "1544", 455, "03032025", 20, 10, $responsable4);
+$viaje5 = new Viaje("Senillosa", "1030", "1230", "1560", 455, "03032025", 20, 10, $responsable4);
 
 $colViajes1 = [$viaje1, $viaje2];
-$colViajes2 = [$viaje3, $viaje4];
+$colViajes2 = [$viaje3, $viaje4, $viaje5];
 
 $empresaFlechaBus = new Empresa("02345", "Flecha Bus", $colViajes1);
 $empresaViaBariloche = new Empresa ("0899", "Via Bariloche", $colViajes2);
@@ -40,13 +41,25 @@ $terminal = new Terminal("terminalNeuquen", "Neuquen 1234", $colEmpresas1);
 echo "\n";
 // echo $terminal;
 
-$terminal->ventaAutomatica(10, "03032025","Senillosa", "Via Bariloche");
-echo $terminal->getColEmpresas()[1];
+$terminal->ventaAutomatica(40, "0804","Roca", "Flecha Bus");
+echo $terminal->getColEmpresas()[0];
 
 echo "\n";
 echo "La empresa que tuvo mayor recaudación fue: ".($terminal->empresaMayorRecaudacion())->getNombre()."\n";
 echo "\n";
 echo "El/la responsable del viaje indicado es: ".($terminal->responsableViaje("1544"))->getNombre()."\n";
 echo "\n";
+
+echo "Dar viaje a destino:\n";
+echo "\n";
+
+$arregloViajes = $empresaViaBariloche->darViajeADestino("Senillosa 5");
+for($i = 0; $i < count($arregloViajes); $i++ ){
+    echo $arregloViajes[$i] ."\n";
+    echo "\n";
+}
+
+
+
 
 ?>

@@ -108,6 +108,11 @@ class Viaje{
     }
 
     //PROPIOS DE CLASE
+    /**
+     * Devuelve un string que contiene toda la información del estado de una instancia de tipo Viaje
+     * 
+     * @return string
+     */
     public function __toString(){
 
         $cadena = "Destino: ".$this->getDestino()."\n";
@@ -123,6 +128,14 @@ class Viaje{
         return $cadena;
     }
 
+    /**
+     * Implementar el método asignarAsientosDisponibles($catAsientos) que recibe por
+     * parámetros la canti- dad de asientos que desean asignarse. El método retorna
+     * verdadero en caso que la asignación pueda concretarse y falso en caso contrario
+     * 
+     * @param int $cantAsientos
+     * @return boolean
+     */
     public function asignarAsientosDisponibles($cantAsientos){
         //boolan $puedenAsignarse
         //int $nuevosADisponibles
