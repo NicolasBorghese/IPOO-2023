@@ -1,4 +1,5 @@
 <?php
+//Por Nicolás Borghese 2023
 
 include_once("Terminal.php");
 include_once("Empresa.php");
